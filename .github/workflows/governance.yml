@@ -1,0 +1,50 @@
+name: Terraform Automated Governance
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  governance-checks:
+    name: Code Quality & Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repository code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Setup Terraform CLI
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+
+      # 3. Check Code Formatting
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      # 4. Validate Terraform Configuration Syntax
+      - name: Terraform Init & Validate
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+      # 5. Run TFLint (Syntax & Best Practices)
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+
+      - name: Init and Run TFLint
+        run: |
+          tflint --init
+          tflint -f compact
+
+      # 6. Run Checkov (Security & Compliance Analysis)
+      - name: Run Checkov Security Scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          config_file: .checkov.yaml

@@ -1,0 +1,3 @@
+mysql_root_password = "CHANGE_ME_IN_LOCAL_TFVARS"
+mysql_database      = "dev_db"
+phpmyadmin_port     = 8080

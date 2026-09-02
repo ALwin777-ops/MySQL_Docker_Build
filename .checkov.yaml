@@ -1,0 +1,5 @@
+framework:
+  - terraform
+quiet: true
+compact: true
+soft-fail: false # Fails the pipeline if security violations are detected
