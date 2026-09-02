@@ -26,7 +26,7 @@ jobs:
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
 
-      # 4. Generate Mock tfvars & Validate Configuration Syntax
+      # 4. Copy Mock tfvars & Validate Configuration Syntax
       - name: Terraform Init & Validate
         run: |
           cp terraform.tfvars.example terraform.tfvars
@@ -44,8 +44,13 @@ jobs:
           tflint --init
           tflint -f compact
 
-      # 6. Run Checkov (Security & Compliance Analysis)
-      - name: Run Checkov Security Scan
-        uses: bridgecrewio/checkov-action@master
+      # 6. Run Checkov via Direct Python CLI (Bypasses Action Deprecation Errors)
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          config_file: .checkov.yaml
+          python-version: '3.11'
+
+      - name: Install & Run Checkov
+        run: |
+          pip install checkov
+          checkov --config-file .checkov.yaml --directory .
