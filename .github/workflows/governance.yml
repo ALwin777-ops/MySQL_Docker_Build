@@ -26,9 +26,10 @@ jobs:
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
 
-      # 4. Validate Terraform Configuration Syntax
+      # 4. Generate Mock tfvars & Validate Configuration Syntax
       - name: Terraform Init & Validate
         run: |
+          cp terraform.tfvars.example terraform.tfvars
           terraform init -backend=false
           terraform validate
 
